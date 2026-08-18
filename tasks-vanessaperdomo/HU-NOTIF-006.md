@@ -2,36 +2,32 @@
 
 ## 1. Explicación y abordaje de la Historia de Usuario
 
-Esta historia le da al sistema la capacidad de enviar mensajes dinámicos sin que los clientes tengan que redactar todo el correo o notificación desde cero cada vez. Funciona gracias a un sistema de plantillas.
+El uso de plantillas evita que los clientes envíen el texto del correo completo cada vez.
 
-Al analizar el código, así es como se implementó:
-*   **Capa de Dominio (Lógica pura):** En la carpeta `domain/service`, encontré el archivo `template_renderer.go`. Tiene una función súper sencilla pero importante: toma un texto que tiene "variables" envueltas en llaves (ejemplo: `Hola {{nombre}}`) y las reemplaza por los valores reales que le llegan en un diccionario (`map`).
-*   **Capa Adaptadora (Base de Datos):** Existe un repositorio especializado (`pg_template_repository.go`) que se encarga exclusivamente de ir a la base de datos a buscar plantillas usando un código único, por ejemplo, `ALERT_TRIGGERED`.
-*   **Capa de Aplicación (La Orquestación):** En los casos de uso que ya vimos antes (como enviar por API o consumir un evento AMQP), el sistema hace una pausa antes de armar la notificación final. Si se indicó un `template_code`, va a la base de datos, extrae la plantilla y llama al servicio de dominio para "renderizarla" inyectando las variables reales (`template_vars`). Si la plantilla está inactiva o no existe, usa los textos por defecto para no fallar.
+*   **Capa de Dominio:** `template_renderer.go` ofrece un servicio puro que reemplaza variables tipo `{{clave}}` por sus valores reales utilizando diccionarios (`map`).
+*   **Capa Adaptadora:** `pg_template_repository.go` lee el formato de la plantilla directamente desde la Base de Datos usando un código (ej. `ALERT_TRIGGERED`).
+*   **Capa de Aplicación:** Antes de enviar el correo, la lógica verifica si se incluyó un `template_code`. De ser así, extrae la plantilla, inyecta los `template_vars` proporcionados, y sobreescribe el asunto y cuerpo de la notificación antes de guardarla.
 
 ---
 
 ## 2. Diagrama del Flujo de Plantillas
 
-Este diagrama muestra cómo se interrumpe el flujo normal para "armar" el mensaje usando la base de datos y el motor de plantillas:
-
 ```mermaid
 sequenceDiagram
     participant CasoDeUso as Lógica (Application)
-    participant RepoTmpl as TemplateRepository (BD)
-    participant Dominio as TemplateRenderer (Domain)
+    participant RepoTmpl as TemplateRepository
+    participant Dominio as TemplateRenderer
 
-    CasoDeUso->>CasoDeUso: Detecta que se solicitó una plantilla
-    CasoDeUso->>RepoTmpl: Buscar por código (ej. 'WELCOME')
+    CasoDeUso->>RepoTmpl: Buscar por código (ej. 'ALERT_TRIGGERED')
     
-    alt Plantilla encontrada y activa
-        RepoTmpl-->>CasoDeUso: Datos de la Plantilla (Subject, Body)
+    alt Plantilla Activa
+        RepoTmpl-->>CasoDeUso: Datos (Subject, Body)
         CasoDeUso->>Dominio: Renderizar(Plantilla, Variables)
-        Dominio-->>CasoDeUso: Texto Final (Variables inyectadas)
-        CasoDeUso->>CasoDeUso: Reemplaza Subject y BodySummary de la notificación
-    else Plantilla no existe o inactiva
+        Dominio-->>CasoDeUso: Texto final inyectado
+        CasoDeUso->>CasoDeUso: Reemplaza Subject/Body original
+    else No existe / Inactiva
         RepoTmpl-->>CasoDeUso: Error / Inactiva
-        CasoDeUso->>CasoDeUso: Ignorar plantilla (usar texto por defecto)
+        CasoDeUso->>CasoDeUso: Ignorar plantilla (usa texto original)
     end
 ```
 
@@ -39,18 +35,19 @@ sequenceDiagram
 
 ## 3. Mejora Propuesta
 
-**Sustituir `strings.ReplaceAll` por el motor oficial `text/template`**
-Al revisar `template_renderer.go`, el renderizado es literalmente un reemplazo de texto básico ("busca X y reemplázalo por Y").
-
-*Mi propuesta:* Deberíamos usar la librería estándar de Go `text/template` (o `html/template`). Esto nos daría superpoderes en las plantillas. En lugar de solo reemplazar palabras, los administradores podrían crear plantillas con lógica, como condicionales (`{{if .es_instructor}}...{{else}}...{{end}}`), o ciclos para mostrar listas, todo directamente desde la base de datos sin tener que cambiar el código fuente.
+**Pasar a `text/template` oficial de Go**
+El código actual realiza reemplazos simples con `strings.ReplaceAll`.
+*Propuesta:* Utilizar el motor nativo `text/template` de Go. Esto habilitaría lógicas poderosas dentro de la base de datos como bucles (`range`) para listas o condicionales (`if`), haciendo los correos mucho más dinámicos sin tocar código fuente.
 
 ---
 
 ## 4. Demostración de Funcionamiento
 
-Para la demostración en video:
-1. Asegúrate de tener levantado el entorno (`docker-compose up -d` y `go run cmd/notification-api/main.go`).
-2. Vas a usar el endpoint `POST /notifications` (vía `curl` o Postman), enviando en el payload un código de plantilla y las variables necesarias.
+A continuación, presento la demostración en video.
+
+**Pasos para ejecutar la prueba:**
+1. Levanta la API (`go run ./cmd/notification-api`).
+2. Envía una petición `POST` solicitando explícitamente el uso de una plantilla (la base de datos debe tener semillas/seeds con `ALERT_TRIGGERED`):
    ```bash
    curl -X POST http://localhost:8080/notifications \
      -H "Content-Type: application/json" \
@@ -58,14 +55,14 @@ Para la demostración en video:
        "recipient_id": "123e4567-e89b-12d3-a456-426614174000",
        "recipient_email": "aprendiz@sena.edu.co",
        "channel": "EMAIL",
-       "subject": "Este asunto será ignorado si la plantilla existe",
+       "subject": "Asunto genérico (será sobreescrito)",
        "template_code": "ALERT_TRIGGERED",
        "template_vars": {
-         "alert_type": "Falla de Sistema",
+         "alert_type": "Servidor Caído",
          "ficha": "3145555"
        }
      }'
    ```
-3. Muestra cómo la API responde `202 Accepted`. *(Opcionalmente, si abres MailHog, podrás ver cómo llegó el correo con las variables inyectadas).*
+3. Realiza un `GET` con el ID generado para demostrar que el "Asunto" (Subject) guardado en base de datos contiene los textos de tus variables (`Servidor Caído`) y no el texto genérico inicial.
 
 🎥 **[PEGAR AQUÍ EL ENLACE AL VIDEO]**

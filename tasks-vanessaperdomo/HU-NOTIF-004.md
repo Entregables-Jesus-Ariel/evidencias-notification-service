@@ -2,17 +2,15 @@
 
 ## 1. Explicación y abordaje de la Historia de Usuario
 
-Esta historia trata sobre la robustez del sistema: cómo se defiende cuando las cosas salen mal (caídas de red, mensajes duplicados o malformados). Al leer el código, pude identificar tres mecanismos clave:
+El sistema se defiende de fallos (caídas de red o mensajes duplicados) mediante tres mecanismos:
 
-*   **Idempotencia (No hacer el mismo trabajo dos veces):** RabbitMQ, por naturaleza, puede entregar el mismo mensaje más de una vez ("at-least-once"). Para protegernos, el archivo `pg_repository.go` (método `SaveWithOutbox`) implementa una regla SQL clave: `ON CONFLICT (source_event_id) DO NOTHING`. Si entra un evento con un `source_event_id` que ya procesamos, la base de datos ignora el insert silenciosamente.
-*   **Reintentos (Retries) en la publicación:** El componente encargado de avisar al resto del mundo que ya enviamos la notificación es el `outbox_relay.go`. Este componente lee los registros de la base de datos. Si al intentar publicarlos en RabbitMQ ocurre un fallo, la transacción en la base de datos hace un `Rollback()`. Como el estado nunca se actualizó a "Publicado", el worker volverá a leer ese registro e **intentará publicarlo de nuevo** en su siguiente ciclo.
-*   **DLQ (Dead Letter Queue):** Analizando la entrada de mensajes en `consumer.go`, el desarrollador dejó claro con un comentario (`no DLQ configured yet`) que actualmente los mensajes malformados que el sistema no entiende simplemente son rechazados (`Nack` sin `requeue`) y **se pierden para siempre**. Aún no existe una verdadera estrategia de retención de mensajes fallidos.
+*   **Idempotencia:** En `pg_repository.go`, la regla SQL `ON CONFLICT (source_event_id) DO NOTHING` ignora inserciones si un evento de RabbitMQ nos llega duplicado, evitando spam.
+*   **Reintentos (Outbox):** El `outbox_relay.go` publica eventos hacia RabbitMQ. Si la red falla a la mitad, la transacción en BD hace `Rollback()`. Así, el evento no se marca como publicado y el Worker volverá a intentarlo en su próximo ciclo automáticamente.
+*   **DLQ:** Se identificó en el código de `consumer.go` que aún no hay un manejo real de mensajes erróneos (se usa un `Nack` destructivo).
 
 ---
 
 ## 2. Diagrama de Resiliencia
-
-Este diagrama ilustra cómo el sistema bloquea los eventos duplicados y cómo reintenta la salida de mensajes:
 
 ```mermaid
 sequenceDiagram
@@ -20,23 +18,22 @@ sequenceDiagram
     participant BD as Postgres (Unique Constraint)
     participant Relay as OutboxRelay
 
-    Note over RabbitMQ,BD: 1. Demostración de Idempotencia
-    RabbitMQ->>BD: Llega Evento 123 (Primer Intento)
-    BD-->>RabbitMQ: OK (Notificación Creada)
-    RabbitMQ->>BD: Llega Evento 123 (Duplicado por error de red)
-    BD-->>RabbitMQ: Ignorado (DO NOTHING - Ya existe)
+    Note over RabbitMQ,BD: Demostración de Idempotencia
+    RabbitMQ->>BD: Llega Evento 123
+    BD-->>RabbitMQ: OK (Creada)
+    RabbitMQ->>BD: Llega Evento 123 (Duplicado)
+    BD-->>RabbitMQ: Ignorado (DO NOTHING)
     
-    Note over Relay,RabbitMQ: 2. Demostración de Reintentos
-    Relay->>BD: Leer mensajes Outbox pendientes
+    Note over Relay,RabbitMQ: Demostración de Reintentos
+    Relay->>BD: Leer Outbox pendientes
     Relay->>RabbitMQ: Publicar "notificación.enviada"
-    RabbitMQ--xRelay: ¡Falla conexión de red!
-    Relay->>BD: Rollback (No marcar como publicado)
+    RabbitMQ--xRelay: Falla de red
+    Relay->>BD: Rollback (Sigue pendiente)
     
-    Note right of Relay: Pasan 5 segundos... (Siguiente ciclo)
-    Relay->>BD: Leer mismos mensajes pendientes
-    Relay->>RabbitMQ: Reintentar publicar "notificación.enviada"
+    Note right of Relay: Siguiente ciclo
+    Relay->>RabbitMQ: Reintentar publicación
     RabbitMQ-->>Relay: OK
-    Relay->>BD: Commit (Marcado como publicado)
+    Relay->>BD: Commit (Publicado)
 ```
 
 ---
@@ -44,18 +41,33 @@ sequenceDiagram
 ## 3. Mejora Propuesta
 
 **Implementar enrutamiento automático a DLQ**
-Actualmente, los eventos que no se pueden desencriptar o procesar son destruidos. 
-
-*Mi propuesta:* Configurar directamente en la definición de la cola de RabbitMQ (cuando se ejecuta `QueueDeclare` en `consumer.go`) los argumentos `x-dead-letter-exchange` y `x-dead-letter-routing-key`. De esta manera, cuando hacemos el `d.Nack(false, false)`, RabbitMQ se encargará automáticamente de mover el mensaje defectuoso a una cola de "mensajes muertos". Esto nos permite no perder auditoría y arreglar los problemas sin que los datos se esfumen.
+*Propuesta:* Al declarar la cola de consumo en `consumer.go`, añadir los argumentos `x-dead-letter-exchange` para que los mensajes rechazados (`Nack`) por estar corruptos pasen automáticamente a una cola muerta para su revisión humana, en lugar de perderlos permanentemente.
 
 ---
 
 ## 4. Demostración de Funcionamiento
 
-Para grabar la evidencia de idempotencia:
-1. Levanta el microservicio (`docker-compose up -d` y `go run cmd/notification-api/main.go`).
-2. Haz una petición `POST /notifications` idéntica a la de la HU-001, pero asegúrate de incluirle manualmente un campo `"source_event_id": "11111111-2222-3333-4444-555555555555"`.
-3. Verás que responde `202 Accepted` y en consola se registra el guardado.
-4. **En tu video, ejecuta inmediatamente el MISMO comando `curl` con el mismo `source_event_id`:** Verás que, aunque responda `202`, al revisar la base de datos o los logs no se habrá creado un correo duplicado, demostrando que el sistema es completamente **idempotente**.
+A continuación, presento la demostración en video probando la Idempotencia.
+
+**Pasos para ejecutar la prueba:**
+1. Levanta el entorno y la API:
+   ```bash
+   docker-compose up -d
+   go run ./cmd/notification-api
+   ```
+2. Ejecuta un `POST` inyectando un `source_event_id` específico:
+   ```bash
+   curl -X POST http://localhost:8080/notifications \
+     -H "Content-Type: application/json" \
+     -d '{
+       "recipient_id": "123e4567-e89b-12d3-a456-426614174000",
+       "recipient_email": "aprendiz@sena.edu.co",
+       "channel": "IN_APP",
+       "subject": "Prueba Idempotencia",
+       "source_event_id": "99999999-9999-9999-9999-999999999999"
+     }'
+   ```
+3. Ejecuta **exactamente el mismo comando `curl` de nuevo**.
+4. Muestra la base de datos (o haz un GET listando) para demostrar que, aunque enviaste dos peticiones idénticas, solo se guardó un registro en BD.
 
 🎥 **[PEGAR AQUÍ EL ENLACE AL VIDEO]**
