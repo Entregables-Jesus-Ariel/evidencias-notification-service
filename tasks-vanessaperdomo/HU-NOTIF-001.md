@@ -2,12 +2,11 @@
 
 ## 1. Explicación y abordaje de la Historia de Usuario
 
-Al revisar el código del proyecto, pude entender cómo funciona el envío de notificaciones a través de la API. El microservicio está construido usando una arquitectura hexagonal, lo que significa que el código está organizado en capas separadas para mantener el orden.
+Al revisar el código, identifiqué cómo el microservicio procesa el envío de notificaciones mediante una Arquitectura Hexagonal:
 
-Así es como fluye la información cuando solicitamos enviar una notificación:
-*   **Capa Adaptadora (La entrada):** Todo empieza en la ruta `POST /notifications`. Aquí hay un controlador (`handler.go`) que recibe la petición HTTP (por ejemplo, desde Postman o una web). Lo primero que hace es verificar que los datos enviados cumplan con lo que espera el sistema. Si todo está bien, convierte esos datos en un "comando" y se los pasa a la siguiente capa.
-*   **Capa de Aplicación (El cerebro):** La información llega al caso de uso (`send_notification.go`). Esta es la parte que contiene la lógica. Si en la petición indicamos que queremos usar una "plantilla" de correo, el código la busca en la base de datos y arma el mensaje. Luego, empaqueta la notificación, le asigna un estado de "Pendiente" (Pending) y la manda a guardar.
-*   **Respuesta rápida (Patrón Outbox):** Algo muy importante que noté es que el sistema no se queda esperando a que el correo electrónico realmente salga hacia el destinatario para respondernos. Simplemente guarda la notificación en la base de datos y nos responde de inmediato con un código `202 Accepted`. Esto significa "Recibido, yo me encargo de enviarlo más tarde en segundo plano".
+*   **Capa Adaptadora (Entrada):** La ruta `POST /notifications` (en `handler.go`) recibe la petición HTTP, valida el formato de los datos y los envía a la siguiente capa.
+*   **Capa de Aplicación (Lógica):** El caso de uso (`send_notification.go`) recibe los datos. Si se indica una plantilla, la busca y arma el mensaje. Luego, marca la notificación como "Pendiente" y la envía a guardar.
+*   **Respuesta rápida:** El sistema guarda la notificación en Base de Datos y responde inmediatamente con un `202 Accepted` (Patrón Outbox). No espera a que el correo se envíe de verdad, dejando esa tarea pesada para un proceso en segundo plano.
 
 ---
 
@@ -50,6 +49,28 @@ Leyendo la lógica actual, me di cuenta de que si un cliente pide usar una plant
 
 ## 4. Demostración de Funcionamiento
 
-A continuación, presento la demostración en video donde levanto la infraestructura local (Docker + Go), envío una petición `POST` al endpoint usando la terminal, y demuestro cómo el servidor la recibe y responde exitosamente con el código `202 Accepted`.
+A continuación, presento la demostración en video. 
 
+**Pasos para ejecutar la prueba:**
+1. Levanta la infraestructura:
+   ```bash
+   docker-compose up -d
+   ```
+2. Inicia la API del microservicio:
+   ```bash
+   go run ./cmd/notification-api
+   ```
+3. En otra terminal, envía la petición POST:
+   ```bash
+   curl -X POST http://localhost:8080/notifications \
+     -H "Content-Type: application/json" \
+     -d '{
+       "recipient_id": "123e4567-e89b-12d3-a456-426614174000",
+       "recipient_email": "aprendiz@sena.edu.co",
+       "channel": "EMAIL",
+       "subject": "Notificación de Prueba",
+       "body_summary": "Este es un mensaje de prueba para la HU-001."
+     }'
+   ```
+4. El servidor responderá con un código `202 Accepted`, demostrando que la ruta funciona y guarda el mensaje.
 🎥 **[PEGAR AQUÍ EL ENLACE AL VIDEO]**
