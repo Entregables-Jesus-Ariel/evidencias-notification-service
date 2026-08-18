@@ -31,8 +31,12 @@ A lo largo del proyecto, se desglosó el funcionamiento del sistema en 8 Histori
 
 ## 3. Diagrama de Arquitectura Global
 
-> **Nota para ti:** Dibuja el diagrama de arquitectura usando herramientas como Draw.io, PowerPoint o Canva (parecido al diseño que me mostraste de tu compañera) y pega la imagen aquí.
-> Ejemplo: `![Diagrama de Arquitectura](./arquitectura.png)`
+> **Nota para ti:** Dibuja el diagrama de arquitectura usando herramientas como Draw.io o usa el siguiente "Prompt" en una Inteligencia Artificial que genere imágenes o diagramas (como Gamma, ChatGPT Plus o Whimsical).
+> 
+> **👇 COPIA Y PEGA ESTE PROMPT EN UNA IA:**
+> *"Actúa como un arquitecto de software y créame un diagrama de arquitectura visual, moderno e isométrico (no uses código, dibújalo visualmente). El flujo es el siguiente: 1. Un 'Cliente HTTP' envía una petición síncrona POST hacia una 'API Handler (Go)'. 2. La API se conecta a una base de datos 'PostgreSQL' aplicando el Patrón Outbox. 3. De forma asíncrona, llega un evento desde un broker 'RabbitMQ' hacia un 'Worker Consumer (Go)'. 4. Este Worker se conecta a PostgreSQL para revisar la idempotencia del evento. 5. Finalmente, el Worker usa un Patrón Composite para enviar un correo electrónico conectándose a un servidor SMTP llamado 'MailHog'. Usa colores morados y rosados oscuros (estilo Drácula)."*
+> 
+> Ejemplo de cómo debe quedar en este documento: `![Diagrama de Arquitectura](./arquitectura.png)`
 
 **[PEGAR AQUÍ LA IMAGEN DEL DIAGRAMA DE ARQUITECTURA]**
 
