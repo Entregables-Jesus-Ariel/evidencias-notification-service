@@ -31,43 +31,35 @@ A lo largo del proyecto, se desglosó el funcionamiento del sistema en 8 Histori
 
 ## 3. Diagrama de Arquitectura Global
 
-> **Nota para ti:** Dibuja el diagrama de arquitectura usando herramientas como Draw.io o usa el siguiente "Prompt" en una Inteligencia Artificial que genere imágenes o diagramas (como Gamma, ChatGPT Plus o Whimsical).
-> **Nota:** Como PlantUML hace diagramas muy "aburridos" y técnicos (blanco y negro), te dejé aquí abajo un diagrama en **Mermaid pero con colores pastel (morados, azules y verdes)** para que se vea mucho más moderno y parecido al de tu compañera.
-> 
-> *GitHub va a dibujar este diagrama automáticamente con colores cuando abras este archivo en tu repositorio. Solo tómale captura de pantalla desde ahí.*
-> 
-> ```mermaid
-> %%{init: {'theme': 'base', 'themeVariables': { 'lineColor': '#6C8EBF', 'textColor': '#333333', 'fontFamily': 'Arial'}}}%%
-> graph TD
->     User((👤 Cliente HTTP))
->     
->     subgraph Microservicio Notification Service
->         API[💻 API HTTP Handler]
->         Worker[⚙️ Worker AMQP Consumer]
->     end
->     
->     BD[(🗄️ PostgreSQL)]
->     MQ((🐇 RabbitMQ))
->     Mail[📧 SMTP MailHog]
->     
->     User -- "POST /notifications (Síncrono)" --> API
->     API -- "Patrón Outbox" --> BD
->     MQ -- "Eventos (Asíncrono)" --> Worker
->     Worker -- "Consulta Idempotencia" --> BD
->     Worker -- "Patrón Composite" --> Mail
->     Worker -- "Publica Evento Outbox" --> MQ
-> 
->     style User fill:#D5E8D4,stroke:#82B366,stroke-width:2px
->     style API fill:#E1D5E7,stroke:#9673A6,stroke-width:2px
->     style Worker fill:#E1D5E7,stroke:#9673A6,stroke-width:2px
->     style BD fill:#DAE8FC,stroke:#6C8EBF,stroke-width:2px
->     style MQ fill:#FFE6CC,stroke:#D79B00,stroke-width:2px
->     style Mail fill:#F8CECC,stroke:#B85450,stroke-width:2px
-> ```
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'lineColor': '#6C8EBF', 'textColor': '#333333', 'fontFamily': 'Arial'}}}%%
+graph TD
+    User((👤 Cliente HTTP))
+    
+    subgraph Microservicio Notification Service
+        API[💻 API HTTP Handler]
+        Worker[⚙️ Worker AMQP Consumer]
+    end
+    
+    BD[(🗄️ PostgreSQL)]
+    MQ((🐇 RabbitMQ))
+    Mail[📧 SMTP MailHog]
+    
+    User -- "POST /notifications (Síncrono)" --> API
+    API -- "Patrón Outbox" --> BD
+    MQ -- "Eventos (Asíncrono)" --> Worker
+    Worker -- "Consulta Idempotencia" --> BD
+    Worker -- "Patrón Composite" --> Mail
+    Worker -- "Publica Evento Outbox" --> MQ
 
-**[PEGAR AQUÍ LA IMAGEN DEL DIAGRAMA DE ARQUITECTURA]**
+    style User fill:#D5E8D4,stroke:#82B366,stroke-width:2px
+    style API fill:#E1D5E7,stroke:#9673A6,stroke-width:2px
+    style Worker fill:#E1D5E7,stroke:#9673A6,stroke-width:2px
+    style BD fill:#DAE8FC,stroke:#6C8EBF,stroke-width:2px
+    style MQ fill:#FFE6CC,stroke:#D79B00,stroke-width:2px
+    style Mail fill:#F8CECC,stroke:#B85450,stroke-width:2px
+```
 
----
 
 ## 4. Resumen de Mejoras Técnicas Propuestas
 
