@@ -1,4 +1,4 @@
-# Evidencia - HU-NOTIF-007: Observabilidad OTel (HTTP + AMQP) y health
+﻿# Evidencia - HU-NOTIF-007: Observabilidad OTel (HTTP + AMQP) y health
 
 ## 1. Explicación y abordaje de la Historia de Usuario
 
@@ -40,7 +40,7 @@ Actualmente `/ready` ejecuta un Ping sincrónico a las bases de datos en tiempo 
 
 ## 4. Demostración de Funcionamiento
 
-A continuación, presento la demostración en video.
+A continuación, presento la evidencia en captura de pantalla individual.
 
 **Pasos para ejecutar la prueba:**
 1. Asegúrate de tener levantado el entorno (`docker-compose up -d`) y la API (`go run ./cmd/notification-api`).
@@ -57,9 +57,9 @@ A continuación, presento la demostración en video.
 4. **Apaga la BD temporalmente:** Abre otra terminal y apaga Postgres con: `docker stop design-software-notification-db`
 5. Vuelve a ejecutar el paso 3. El microservicio reaccionará devolviendo un `503 Service Unavailable`, demostrando su capacidad de autodiagnóstico. *(Luego, vuélvela a prender con `docker start design-software-notification-db`).*
 
-🎥 **[PEGAR AQUÍ EL ENLACE AL VIDEO]**
+🖼️ **[PEGAR AQUÍ LA CAPTURA DE PANTALLA INDIVIDUAL]**
 
 ---
 
-**Conclusión del Video:** 
+**Conclusión de la Evidencia:** 
 En esta prueba se validaron las sondas de observabilidad (Liveness y Readiness). Al simular la caída intencional de la base de datos, se comprobó cómo el microservicio tiene la capacidad de autodiagnosticarse profundamente, cambiando su estado a inoperativo (`503`) para prevenir pérdidas de datos.

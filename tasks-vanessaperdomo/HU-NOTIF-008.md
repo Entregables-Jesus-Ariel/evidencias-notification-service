@@ -1,4 +1,4 @@
-# Evidencia - HU-NOTIF-008: Levantado local end-to-end
+﻿# Evidencia - HU-NOTIF-008: Levantado local end-to-end
 
 ## 1. Explicación y abordaje de la Historia de Usuario
 
@@ -41,7 +41,7 @@ Actualmente se deben levantar 3 terminales y exportar variables de entorno manua
 
 ## 4. Demostración de Funcionamiento
 
-A continuación, presento la demostración en video del End-to-End completo.
+A continuación, presento la evidencia en captura de pantalla individual del End-to-End completo.
 
 **Pasos para ejecutar la prueba:**
 1. Levanta la infraestructura de Docker:
@@ -63,9 +63,9 @@ A continuación, presento la demostración en video del End-to-End completo.
 5. Abre **MailHog** en tu navegador web (`http://localhost:8025`).
 6. Demuestra en el video que todo el flujo concluyó con la llegada del correo a la bandeja de prueba.
 
-🎥 **[PEGAR AQUÍ EL ENLACE AL VIDEO]**
+🖼️ **[PEGAR AQUÍ LA CAPTURA DE PANTALLA INDIVIDUAL]**
 
 ---
 
-**Conclusión del Video:** 
+**Conclusión de la Evidencia:** 
 El levantamiento End-to-End comprobó la solidez completa de la arquitectura. Se demostró la perfecta interoperabilidad simultánea entre el API que encola el trabajo (Outbox), el Worker que consume los eventos y los componentes de infraestructura, resultando en un sistema distribuido confiable y funcional.

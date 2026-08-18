@@ -50,7 +50,7 @@ Actualmente, si llega un mensaje malformado a `consumer.go`, se hace un `Nack` s
 
 ## 4. Demostración de Funcionamiento
 
-A continuación, presento la demostración en video.
+A continuación, presento la evidencia en captura de pantalla individual.
 
 **Pasos para ejecutar la prueba:**
 1. Levanta la infraestructura:
@@ -70,6 +70,8 @@ A continuación, presento la demostración en video.
      "event_id": "11111111-2222-3333-4444-555555555555",
      "event_type": "scheduling.schedule.published",
      "source_service": "scheduling-service",
+     "timestamp": "2026-08-18T10:00:00Z",
+     "version": "1.0",
      "payload": {
        "published_by": "123e4567-e89b-12d3-a456-426614174000",
        "schedule_name": "Horario Mañana",
@@ -79,9 +81,9 @@ A continuación, presento la demostración en video.
    ```
 7. En la terminal del worker verás cómo el evento es consumido y procesado correctamente.
 
-🎥 **[PEGAR AQUÍ EL ENLACE AL VIDEO]**
+🖼️ **[PEGAR AQUÍ LA CAPTURA DE PANTALLA INDIVIDUAL]**
 
 ---
 
-**Conclusión del Video:** 
+**Conclusión de la Evidencia:** 
 Esta demostración comprobó la capacidad reactiva del microservicio. Se evidenció la correcta suscripción al broker de mensajería (RabbitMQ), el consumo exitoso de un evento de dominio externo y su procesamiento inmediato, operando de forma totalmente desacoplada.

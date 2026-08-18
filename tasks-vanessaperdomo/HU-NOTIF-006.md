@@ -1,4 +1,4 @@
-# Evidencia - HU-NOTIF-006: Plantillas de notificación
+﻿# Evidencia - HU-NOTIF-006: Plantillas de notificación
 
 ## 1. Explicación y abordaje de la Historia de Usuario
 
@@ -43,7 +43,7 @@ El código actual realiza reemplazos simples con `strings.ReplaceAll`.
 
 ## 4. Demostración de Funcionamiento
 
-A continuación, presento la demostración en video.
+A continuación, presento la evidencia en captura de pantalla individual.
 
 **Pasos para ejecutar la prueba:**
 1. Levanta la API (`go run ./cmd/notification-api`).
@@ -65,9 +65,9 @@ A continuación, presento la demostración en video.
    ```
 3. Realiza un `GET` con el ID generado para demostrar que el "Asunto" (Subject) guardado en base de datos contiene los textos de tus variables (`Servidor Caído`) y no el texto genérico inicial.
 
-🎥 **[PEGAR AQUÍ EL ENLACE AL VIDEO]**
+🖼️ **[PEGAR AQUÍ LA CAPTURA DE PANTALLA INDIVIDUAL]**
 
 ---
 
-**Conclusión del Video:** 
+**Conclusión de la Evidencia:** 
 El video demostró la integración del servicio de renderizado de plantillas. Se evidenció cómo el sistema consulta la base de datos, extrae la plantilla dinámica configurada (`ALERT_TRIGGERED`) e inyecta correctamente las variables de negocio en tiempo de ejecución antes de consolidar el mensaje final.

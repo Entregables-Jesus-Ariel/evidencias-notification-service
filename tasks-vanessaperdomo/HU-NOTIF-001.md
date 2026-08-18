@@ -1,4 +1,4 @@
-# Evidencia - HU-NOTIF-001: Enviar notificación vía API
+﻿# Evidencia - HU-NOTIF-001: Enviar notificación vía API
 
 ## 1. Explicación y abordaje de la Historia de Usuario
 
@@ -49,7 +49,7 @@ Leyendo la lógica actual, me di cuenta de que si un cliente pide usar una plant
 
 ## 4. Demostración de Funcionamiento
 
-A continuación, presento la demostración en video. 
+A continuación, presento la evidencia en captura de pantalla individual. 
 
 **Pasos para ejecutar la prueba:**
 1. Levanta la infraestructura:
@@ -73,9 +73,9 @@ A continuación, presento la demostración en video.
      }'
    ```
 4. El servidor responderá con un código `202 Accepted`, demostrando que la ruta funciona y guarda el mensaje.
-🎥 **[PEGAR AQUÍ EL ENLACE AL VIDEO]**
+🖼️ **[PEGAR AQUÍ LA CAPTURA DE PANTALLA INDIVIDUAL]**
 
 ---
 
-**Conclusión del Video:** 
+**Conclusión de la Evidencia:** 
 En esta demostración se comprobó el correcto funcionamiento de la capa adaptadora HTTP. Se evidenció cómo el sistema recibe una solicitud, delega la carga de trabajo de manera asíncrona mediante el Patrón Outbox, y devuelve una respuesta inmediata `202 Accepted` garantizando el alto rendimiento del API sin bloquear al cliente.

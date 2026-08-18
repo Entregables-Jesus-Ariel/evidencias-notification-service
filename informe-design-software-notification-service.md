@@ -75,70 +75,58 @@ Durante el análisis del código, se identificaron 3 oportunidades clave de mejo
 El siguiente paso a paso agrupa todas las funcionalidades del microservicio en **un solo flujo demostrativo**. Úsalo como guion para grabar tu video general.
 
 ### Paso 1: Levantar la Infraestructura
-En una terminal (idealmente en la raíz o en la carpeta `design-software-docker-infra-main`), levanta los contenedores:
-```bash
-docker-compose up -d
+En una terminal (idealmente en la carpeta `design-software-docker-infra-main`), levanta todos los contenedores (incluyendo RabbitMQ y OpenTelemetry):
+```powershell
+docker-compose --profile broker --profile observability up -d
 ```
-*(Muestra en el video que Postgres, RabbitMQ y MailHog están corriendo en Docker).*
+*(Muestra en el video que Postgres, RabbitMQ, MailHog y OpenTelemetry están corriendo).*
 
 ### Paso 2: Levantar el API
-Abre una nueva terminal en la carpeta del código fuente, exporta la variable de conexión y arranca el API:
+Abre una nueva terminal en la carpeta del código fuente, exporta la variable de conexión y arranca el API usando la ruta absoluta de Go:
 ```powershell
-$env:NOTIFICATION_DB_DSN = "postgres://design_software_app:change-me-app@localhost:15432/design-software-develop?sslmode=disable"
-go run ./cmd/notification-api
+Stop-Process -Id (Get-NetTCPConnection -LocalPort 8080).OwningProcess -Force -ErrorAction SilentlyContinue; $env:NOTIFICATION_DB_DSN = "postgres://design_software_user:change-me@localhost:15432/design-software-develop?sslmode=disable"; $env:NOTIFICATION_AMQP_URL = "amqp://app:app@localhost:5672/"; & "C:\Program Files\Go\bin\go.exe" run ./cmd/notification-api
 ```
 
 ### Paso 3: Levantar el Worker
-Abre otra terminal, exporta la misma variable y arranca el Worker:
+Abre otra terminal en la carpeta del código fuente y arranca el Worker:
 ```powershell
-$env:NOTIFICATION_DB_DSN = "postgres://design_software_app:change-me-app@localhost:15432/design-software-develop?sslmode=disable"
-go run ./cmd/notification-worker
+$env:NOTIFICATION_DB_DSN = "postgres://design_software_user:change-me@localhost:15432/design-software-develop?sslmode=disable"; $env:NOTIFICATION_AMQP_URL = "amqp://app:app@localhost:5672/"; $env:NOTIFICATION_SMTP_ADDR = "localhost:1025"; & "C:\Program Files\Go\bin\go.exe" run ./cmd/notification-worker
 ```
 
 ### Paso 4: Comprobar Salud (HU-007)
-En una cuarta terminal, demuestra que el API está conectada a la BD y RabbitMQ exitosamente:
-```bash
-curl -i -X GET http://localhost:8080/ready
+En una cuarta terminal, demuestra que el API está conectada a la BD y RabbitMQ exitosamente (usando `curl.exe` en Windows):
+```powershell
+curl.exe -i -X GET http://localhost:8080/ready
 ```
 *(Debe devolver un `200 OK`).*
 
 ### Paso 5: Enviar Notificación vía API (HU-001 y HU-006)
 Copia y pega este comando para inyectar una notificación simulando una plantilla:
-```bash
-curl -X POST http://localhost:8080/notifications \
-  -H "Content-Type: application/json" \
-  -d '{
-    "recipient_id": "123e4567-e89b-12d3-a456-426614174000",
-    "recipient_email": "aprendiz@sena.edu.co",
-    "channel": "EMAIL",
-    "subject": "Notificacion desde API",
-    "template_code": "ALERT_TRIGGERED",
-    "template_vars": {
-      "alert_type": "Fallo en Producción",
-      "ficha": "3145555"
-    }
-  }'
+```powershell
+curl.exe -X POST http://localhost:8080/notifications -H "Content-Type: application/json" -d "{ \"recipient_id\": \"123e4567-e89b-12d3-a456-426614174000\", \"recipient_email\": \"aprendiz@sena.edu.co\", \"channel\": \"EMAIL\", \"subject\": \"Notificacion desde API\", \"template_code\": \"ALERT_TRIGGERED\", \"template_vars\": { \"alert_type\": \"Fallo en Produccion\", \"ficha\": \"3145555\" } }"
 ```
 *(Debe devolver un `202 Accepted`). Copia el ID que te devuelve.*
 
 ### Paso 6: Consultar Notificación (HU-005)
 Usa el ID copiado para consultarla (cambia `EL-ID-COPIADO`):
-```bash
-curl -X GET http://localhost:8080/notifications/EL-ID-COPIADO
+```powershell
+curl.exe -X GET http://localhost:8080/notifications/EL-ID-COPIADO
 ```
 
 ### Paso 7: Comprobar el Correo (MailHog) (HU-003 y HU-008)
-Ve a tu navegador y abre `http://localhost:8025`.
+Ve a tu navegador y abre `http://localhost:18025`.
 Muestra que el correo llegó correctamente y que las variables de la plantilla se reemplazaron en el asunto/cuerpo.
 
 ### Paso 8: Probar Idempotencia y Asincronismo (HU-002 y HU-004)
-Ve a la interfaz de RabbitMQ en tu navegador `http://localhost:15672` (usuario/clave por defecto del docker o admin/admin).
+Ve a la interfaz de RabbitMQ en tu navegador `http://localhost:15672` (usuario: `app` / clave: `app`).
 Entra a la pestaña **Exchanges**, selecciona `scheduling-events` y en **Publish message** pon en Routing key: `scheduling.schedule.published` y este JSON:
 ```json
 {
   "event_id": "99999999-9999-9999-9999-999999999999",
   "event_type": "scheduling.schedule.published",
   "source_service": "scheduling-service",
+  "timestamp": "2026-08-18T10:00:00Z",
+  "version": "1.0",
   "payload": {
     "published_by": "123e4567-e89b-12d3-a456-426614174000",
     "schedule_name": "Horario Mañana"
@@ -151,13 +139,72 @@ Explica en el video que, gracias a la **Idempotencia**, la Base de Datos bloque�
 
 ---
 
-## 5. Evidencias de Ejecución de Comandos y Consultas SQL
+## 5. Evidencias Individuales por Historia de Usuario (Capturas)
 
-A continuación se adjuntan las capturas de pantalla que demuestran la correcta ejecución de los comandos (Docker, Go, cURL) y las consultas SQL a la base de datos (PostgreSQL) verificando el registro de notificaciones y la tabla Outbox.
+A continuación se presentan las evidencias paso a paso que demuestran el cumplimiento de cada Historia de Usuario (HU).
 
-🖼️ **[PEGAR AQUÍ LAS CAPTURAS DE TERMINAL Y BASE DE DATOS]**
+### HU-NOTIF-008: Despliegue Local (Docker)
+**Descripción:** El ecosistema completo se despliega separando la infraestructura (Postgres, RabbitMQ, OpenTelemetry) de los servicios (API y Worker).
+**Comandos:**
+```powershell
+docker-compose --profile broker --profile observability up -d
+docker ps
+```
+**Evidencia:**
+🖼️ `[PEGAR AQUÍ CAPTURA DE LA TERMINAL MOSTRANDO LOS CONTENEDORES CORRIENDO]`
 
----
+### HU-NOTIF-007: Observabilidad (Health/Ready)
+**Descripción:** El sistema expone endpoints para verificar su estado de salud y su conexión a los componentes externos (BD y Broker).
+**Comando:**
+```powershell
+curl.exe -i -X GET http://localhost:8080/ready
+```
+**Evidencia:**
+🖼️ `[PEGAR AQUÍ CAPTURA DE LA TERMINAL MOSTRANDO EL STATUS OK]`
+
+### HU-NOTIF-001: API HTTP (Síncrono a Asíncrono)
+**Descripción:** Recepción de peticiones HTTP POST, guardando en Base de Datos y respondiendo rápido sin bloquear la aplicación.
+**Comando:**
+```powershell
+curl.exe -i -X POST http://localhost:8080/notifications -H "Content-Type: application/json" -d "{\`"recipient_id\`": \`"123e4567-e89b-12d3-a456-426614174000\`", \`"recipient_email\`": \`"aprendiz@sena.edu.co\`", \`"channel\`": \`"EMAIL\`", \`"subject\`": \`"Notificacion desde API\`", \`"template_code\`": \`"ALERT_TRIGGERED\`", \`"template_vars\`": { \`"alert_type\`": \`"Fallo en Produccion\`", \`"ficha\`": \`"3145555\`" }}"
+```
+**Evidencia:**
+🖼️ `[PEGAR AQUÍ CAPTURA DEL CÓDIGO 202 ACCEPTED Y EL JSON QUE DEVUELVE LA API]`
+
+### HU-NOTIF-005: Consultas (GET por ID)
+**Descripción:** Consultar el estado de una notificación usando el ID único devuelto en el paso anterior.
+**Comando:** *(reemplaza el ID por el tuyo)*
+```powershell
+curl.exe -i -X GET http://localhost:8080/notifications/<EL-ID-COPIADO>
+```
+**Evidencia:**
+🖼️ `[PEGAR AQUÍ CAPTURA DE LA TERMINAL MOSTRANDO LOS DATOS DE LA NOTIFICACIÓN]`
+
+### HU-NOTIF-002: Consumo AMQP (Worker Reactivo)
+**Descripción:** El Worker escucha eventos de dominio directamente desde el bus de mensajes RabbitMQ y los procesa sin intervención HTTP.
+**Acción:** Publicar el JSON del evento `scheduling.schedule.published` directo en la interfaz de RabbitMQ.
+**Evidencia:**
+🖼️ `[PEGAR AQUÍ CAPTURA DEL FORMULARIO DE RABBITMQ CON EL JSON Y EL MENSAJE EN VERDE "Message published"]`
+
+### HU-NOTIF-006: Plantillas Dinámicas
+**Descripción:** El sistema toma un evento genérico y renderiza un asunto/cuerpo personalizado usando el motor de plantillas (inyectando la variable "Horario Mañana").
+**Evidencia:**
+🖼️ `[PEGAR AQUÍ CAPTURA DE LA BANDEJA DE MAILHOG DONDE SE VEA EL ASUNTO CON EL TEXTO REEMPLAZADO "Tu horario Horario Mañana fue publicado"]`
+
+### HU-NOTIF-003: Múltiples Canales (Composite Notifier)
+**Descripción:** El orquestador (Patrón Composite) determina el canal y decide usar el Notificador SMTP para mandar un correo electrónico real.
+**Evidencia:**
+🖼️ `[PEGAR AQUÍ LA MISMA CAPTURA DE MAILHOG O UNA MOSTRANDO EL DETALLE DEL CORREO RECIBIDO]`
+
+### HU-NOTIF-004: Resiliencia (Idempotencia en Base de Datos)
+**Descripción:** Evitar enviar y registrar correos duplicados si el mismo evento de RabbitMQ se procesa dos veces.
+**Acción:** Darle click nuevamente al botón "Publish message" en RabbitMQ con el mismo JSON. Luego revisar la BD para ver que solo guardó 1 fila.
+**Comando:**
+```powershell
+docker exec ds-develop-postgres-1 psql -U design_software_user -d design-software-develop -c "SELECT id, send_status, source_event_id FROM notification.sent_notification;"
+```
+**Evidencia:**
+🖼️ `[PEGAR AQUÍ CAPTURA DE LA TERMINAL MOSTRANDO LA TABLA DE POSTGRES CON UNA SOLA FILA PARA ESE EVENT_ID]`
 
 ## 6. Evidencia en Video (Ejecución General)
 

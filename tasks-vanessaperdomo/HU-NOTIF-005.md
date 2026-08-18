@@ -1,4 +1,4 @@
-# Evidencia - HU-NOTIF-005: Consultar notificación enviada
+﻿# Evidencia - HU-NOTIF-005: Consultar notificación enviada
 
 ## 1. Explicación y abordaje de la Historia de Usuario
 
@@ -51,7 +51,7 @@ Actualmente, cualquier persona con un UUID válido puede ver una notificación, 
 
 ## 4. Demostración de Funcionamiento
 
-A continuación, presento la demostración en video.
+A continuación, presento la evidencia en captura de pantalla individual.
 
 **Pasos para ejecutar la prueba:**
 1. Levanta la API (`go run ./cmd/notification-api`).
@@ -63,9 +63,9 @@ A continuación, presento la demostración en video.
 4. El servidor te devolverá los datos de la notificación con un código `200 OK`.
 5. Cambia el último número del ID e inténtalo de nuevo para demostrar cómo el servidor responde con un `404 Not Found`.
 
-🎥 **[PEGAR AQUÍ EL ENLACE AL VIDEO]**
+🖼️ **[PEGAR AQUÍ LA CAPTURA DE PANTALLA INDIVIDUAL]**
 
 ---
 
-**Conclusión del Video:** 
+**Conclusión de la Evidencia:** 
 A través de esta demostración se validó el flujo de consulta de estado del sistema. Quedó en evidencia el manejo adecuado de errores por parte del API HTTP, traduciendo exitosamente una excepción de dominio (No Encontrado) en un código de estado `404 Not Found` apropiado para clientes REST.
