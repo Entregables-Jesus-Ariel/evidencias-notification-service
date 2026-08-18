@@ -14,11 +14,11 @@ Se analizaron 8 Historias de Usuario (HUs). Para cada una se generó un document
 4. Las instrucciones paso a paso para ejecutar la demostración local y grabar el video.
 
 ### Historias Analizadas:
-- [HU-NOTIF-001.md](./HU-NOTIF-001.md): Enviar notificación vía API (contract-first, POST `/notifications`).
-- [HU-NOTIF-002.md](./HU-NOTIF-002.md): Consumir evento y entregar notificación vía RabbitMQ (AMQP).
-- [HU-NOTIF-003.md](./HU-NOTIF-003.md): Soporte para múltiples canales (Composite Notifier para `EMAIL` e `IN_APP`).
-- [HU-NOTIF-004.md](./HU-NOTIF-004.md): Estrategias de resiliencia (Idempotencia por base de datos, reintentos del Patrón Outbox y DLQ).
-- [HU-NOTIF-005.md](./HU-NOTIF-005.md): Consulta de notificaciones enviadas (GET `/notifications/{id}`).
-- [HU-NOTIF-006.md](./HU-NOTIF-006.md): Uso del servicio de dominio de plantillas de notificación (`template_renderer`).
-- [HU-NOTIF-007.md](./HU-NOTIF-007.md): Pruebas de disponibilidad y observabilidad (`/health`, `/ready`, y continuidad de trazas OTel).
-- [HU-NOTIF-008.md](./HU-NOTIF-008.md): Demostración del levantamiento del entorno local End-to-End.
+- [HU-NOTIF-001.md](./tasks-vanessaperdomo/HU-NOTIF-001.md): Enviar notificación vía API (contract-first, POST `/notifications`).
+- [HU-NOTIF-002.md](./tasks-vanessaperdomo/HU-NOTIF-002.md): Consumir evento y entregar notificación vía RabbitMQ (AMQP).
+- [HU-NOTIF-003.md](./tasks-vanessaperdomo/HU-NOTIF-003.md): Soporte para múltiples canales (Composite Notifier para `EMAIL` e `IN_APP`).
+- [HU-NOTIF-004.md](./tasks-vanessaperdomo/HU-NOTIF-004.md): Estrategias de resiliencia (Idempotencia por base de datos, reintentos del Patrón Outbox y DLQ).
+- [HU-NOTIF-005.md](./tasks-vanessaperdomo/HU-NOTIF-005.md): Consulta de notificaciones enviadas (GET `/notifications/{id}`).
+- [HU-NOTIF-006.md](./tasks-vanessaperdomo/HU-NOTIF-006.md): Uso del servicio de dominio de plantillas de notificación (`template_renderer`).
+- [HU-NOTIF-007.md](./tasks-vanessaperdomo/HU-NOTIF-007.md): Pruebas de disponibilidad y observabilidad (`/health`, `/ready`, y continuidad de trazas OTel).
+- [HU-NOTIF-008.md](./tasks-vanessaperdomo/HU-NOTIF-008.md): Demostración del levantamiento del entorno local End-to-End.
