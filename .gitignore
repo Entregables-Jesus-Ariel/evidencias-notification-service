@@ -1,0 +1,23 @@
+# Ignorar binarios compilados de Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Ignorar archivos de IDEs y editores
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Ignorar logs y archivos del SO
+*.log
+.DS_Store
+Thumbs.db
+
+# (Opcional) Si en esta carpeta está el repositorio clonado y no quieres subir su código,
+# descomenta la siguiente línea:
+# design-software-notification-service-develop/
