@@ -32,11 +32,35 @@ A lo largo del proyecto, se desglosó el funcionamiento del sistema en 8 Histori
 ## 3. Diagrama de Arquitectura Global
 
 > **Nota para ti:** Dibuja el diagrama de arquitectura usando herramientas como Draw.io o usa el siguiente "Prompt" en una Inteligencia Artificial que genere imágenes o diagramas (como Gamma, ChatGPT Plus o Whimsical).
+> **👇 CÓDIGO PLANTUML PARA EL DIAGRAMA:**
+> Copia el siguiente código y pégalo en una IA o directamente en [PlantText](https://planttext.com/) o [PlantUML Web](http://www.plantuml.com/plantuml/) para generar el diagrama. Descarga la imagen y ponla aquí.
 > 
-> **👇 COPIA Y PEGA ESTE PROMPT EN UNA IA:**
-> *"Actúa como un arquitecto de software y créame un diagrama de arquitectura visual, moderno e isométrico (no uses código, dibújalo visualmente). El flujo es el siguiente: 1. Un 'Cliente HTTP' envía una petición síncrona POST hacia una 'API Handler (Go)'. 2. La API se conecta a una base de datos 'PostgreSQL' aplicando el Patrón Outbox. 3. De forma asíncrona, llega un evento desde un broker 'RabbitMQ' hacia un 'Worker Consumer (Go)'. 4. Este Worker se conecta a PostgreSQL para revisar la idempotencia del evento. 5. Finalmente, el Worker usa un Patrón Composite para enviar un correo electrónico conectándose a un servidor SMTP llamado 'MailHog'. Usa colores morados y rosados oscuros (estilo Drácula)."*
+> ```plantuml
+> @startuml
+> skinparam componentStyle rectangle
+> skinparam backgroundColor #Fdfdfd
 > 
-> Ejemplo de cómo debe quedar en este documento: `![Diagrama de Arquitectura](./arquitectura.png)`
+> actor "Cliente HTTP" as User
+> 
+> node "Notification Service (Go)" {
+>     component "API HTTP Handler" as API
+>     component "Worker AMQP Consumer" as Worker
+> }
+> 
+> database "PostgreSQL" as BD
+> queue "RabbitMQ" as MQ
+> node "MailHog (SMTP)" as Mail
+> 
+> User --> API : " POST /notifications"
+> API --> BD : " Patrón Outbox"
+> MQ --> Worker : " Consume Eventos"
+> Worker --> BD : " Idempotencia y Estado"
+> Worker --> Mail : " Envia Correo (Composite)"
+> Worker --> MQ : " Publica Evento Outbox"
+> @enduml
+> ```
+> 
+> Ejemplo de cómo incluir la imagen exportada en el documento: `![Diagrama de Arquitectura](./arquitectura.png)`
 
 **[PEGAR AQUÍ LA IMAGEN DEL DIAGRAMA DE ARQUITECTURA]**
 
@@ -132,7 +156,15 @@ Explica en el video que, gracias a la **Idempotencia**, la Base de Datos bloque�
 
 ---
 
-## 4. Evidencia en Video (Ejecución General)
+## 5. Evidencias de Ejecución de Comandos y Consultas SQL
+
+A continuación se adjuntan las capturas de pantalla que demuestran la correcta ejecución de los comandos (Docker, Go, cURL) y las consultas SQL a la base de datos (PostgreSQL) verificando el registro de notificaciones y la tabla Outbox.
+
+🖼️ **[PEGAR AQUÍ LAS CAPTURAS DE TERMINAL Y BASE DE DATOS]**
+
+---
+
+## 6. Evidencia en Video (Ejecución General)
 
 🎥 **[PEGAR AQUÍ EL ENLACE AL VIDEO GENERAL DE ESTA EJECUCIÓN]**
 
