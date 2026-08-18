@@ -71,3 +71,8 @@ A continuación, presento la demostración en video.
 4. Muestra en el video que el correo llegó a la bandeja de entrada, demostrando que el `SMTPNotifier` funcionó correctamente.
 
 🎥 **[PEGAR AQUÍ EL ENLACE AL VIDEO]**
+
+---
+
+**Conclusión del Video:** 
+En este ejercicio se validó la implementación del Patrón Composite. Se demostró cómo el orquestador de canales discrimina exitosamente la petición (EMAIL) e invoca correctamente al proveedor externo (MailHog a través de SMTP) entregando el correo de forma efectiva.

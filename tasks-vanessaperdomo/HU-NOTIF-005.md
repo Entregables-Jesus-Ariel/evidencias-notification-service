@@ -64,3 +64,8 @@ A continuación, presento la demostración en video.
 5. Cambia el último número del ID e inténtalo de nuevo para demostrar cómo el servidor responde con un `404 Not Found`.
 
 🎥 **[PEGAR AQUÍ EL ENLACE AL VIDEO]**
+
+---
+
+**Conclusión del Video:** 
+A través de esta demostración se validó el flujo de consulta de estado del sistema. Quedó en evidencia el manejo adecuado de errores por parte del API HTTP, traduciendo exitosamente una excepción de dominio (No Encontrado) en un código de estado `404 Not Found` apropiado para clientes REST.

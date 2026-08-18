@@ -64,3 +64,8 @@ A continuación, presento la demostración en video del End-to-End completo.
 6. Demuestra en el video que todo el flujo concluyó con la llegada del correo a la bandeja de prueba.
 
 🎥 **[PEGAR AQUÍ EL ENLACE AL VIDEO]**
+
+---
+
+**Conclusión del Video:** 
+El levantamiento End-to-End comprobó la solidez completa de la arquitectura. Se demostró la perfecta interoperabilidad simultánea entre el API que encola el trabajo (Outbox), el Worker que consume los eventos y los componentes de infraestructura, resultando en un sistema distribuido confiable y funcional.

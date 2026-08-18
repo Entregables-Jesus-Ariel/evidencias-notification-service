@@ -74,3 +74,8 @@ A continuación, presento la demostración en video.
    ```
 4. El servidor responderá con un código `202 Accepted`, demostrando que la ruta funciona y guarda el mensaje.
 🎥 **[PEGAR AQUÍ EL ENLACE AL VIDEO]**
+
+---
+
+**Conclusión del Video:** 
+En esta demostración se comprobó el correcto funcionamiento de la capa adaptadora HTTP. Se evidenció cómo el sistema recibe una solicitud, delega la carga de trabajo de manera asíncrona mediante el Patrón Outbox, y devuelve una respuesta inmediata `202 Accepted` garantizando el alto rendimiento del API sin bloquear al cliente.

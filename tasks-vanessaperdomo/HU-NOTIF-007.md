@@ -58,3 +58,8 @@ A continuación, presento la demostración en video.
 5. Vuelve a ejecutar el paso 3. El microservicio reaccionará devolviendo un `503 Service Unavailable`, demostrando su capacidad de autodiagnóstico. *(Luego, vuélvela a prender con `docker start design-software-notification-db`).*
 
 🎥 **[PEGAR AQUÍ EL ENLACE AL VIDEO]**
+
+---
+
+**Conclusión del Video:** 
+En esta prueba se validaron las sondas de observabilidad (Liveness y Readiness). Al simular la caída intencional de la base de datos, se comprobó cómo el microservicio tiene la capacidad de autodiagnosticarse profundamente, cambiando su estado a inoperativo (`503`) para prevenir pérdidas de datos.

@@ -66,3 +66,8 @@ A continuación, presento la demostración en video.
 3. Realiza un `GET` con el ID generado para demostrar que el "Asunto" (Subject) guardado en base de datos contiene los textos de tus variables (`Servidor Caído`) y no el texto genérico inicial.
 
 🎥 **[PEGAR AQUÍ EL ENLACE AL VIDEO]**
+
+---
+
+**Conclusión del Video:** 
+El video demostró la integración del servicio de renderizado de plantillas. Se evidenció cómo el sistema consulta la base de datos, extrae la plantilla dinámica configurada (`ALERT_TRIGGERED`) e inyecta correctamente las variables de negocio en tiempo de ejecución antes de consolidar el mensaje final.

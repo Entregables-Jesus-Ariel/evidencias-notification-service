@@ -71,3 +71,8 @@ A continuación, presento la demostración en video probando la Idempotencia.
 4. Muestra la base de datos (o haz un GET listando) para demostrar que, aunque enviaste dos peticiones idénticas, solo se guardó un registro en BD.
 
 🎥 **[PEGAR AQUÍ EL ENLACE AL VIDEO]**
+
+---
+
+**Conclusión del Video:** 
+Esta prueba validó los mecanismos de resiliencia del sistema. Al inyectar eventos duplicados intencionalmente, se demostró cómo la restricción de unicidad en Postgres (Idempotencia) protege eficazmente al microservicio de enviar spam o procesar cargas redundantes ante fallos en la red.

@@ -80,3 +80,8 @@ A continuación, presento la demostración en video.
 7. En la terminal del worker verás cómo el evento es consumido y procesado correctamente.
 
 🎥 **[PEGAR AQUÍ EL ENLACE AL VIDEO]**
+
+---
+
+**Conclusión del Video:** 
+Esta demostración comprobó la capacidad reactiva del microservicio. Se evidenció la correcta suscripción al broker de mensajería (RabbitMQ), el consumo exitoso de un evento de dominio externo y su procesamiento inmediato, operando de forma totalmente desacoplada.
