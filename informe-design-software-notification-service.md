@@ -1,6 +1,6 @@
 # Informe General - Diseño de Software: Notification Service
 
-**Autor/a:** Vanessa Perdomo (o tu nombre)  
+**Autor/a:** Vanessa Perdomo 
 **Ficha:** 3145555  
 **Proyecto:** Notification Service (Arquitectura Hexagonal en Go)
 
@@ -29,7 +29,37 @@ A lo largo del proyecto, se desglosó el funcionamiento del sistema en 8 Histori
 
 ---
 
-## 3. Guía de Ejecución para Video General (End-to-End)
+## 3. Diagrama de Arquitectura Global
+
+```mermaid
+graph TD
+    User((Cliente HTTP))
+    API[💻 API HTTP Handler]
+    Worker[⚙️ Worker AMQP Consumer]
+    BD[(🗄️ PostgreSQL)]
+    MQ((🐇 RabbitMQ))
+    Mail[📧 Servidor SMTP MailHog]
+    
+    User -- "POST /notifications (Síncrono)" --> API
+    API -- "Patrón Outbox" --> BD
+    MQ -- "Eventos (Asíncrono)" --> Worker
+    Worker -- "Idempotencia y Estado" --> BD
+    Worker -- "Patrón Composite" --> Mail
+    Worker -- "Publica Outbox Event" --> MQ
+```
+
+---
+
+## 4. Resumen de Mejoras Técnicas Propuestas
+
+Durante el análisis del código, se identificaron 3 oportunidades clave de mejora arquitectónica:
+1. **Enrutamiento a Dead Letter Queue (DLQ):** Automatizar que los mensajes corruptos rechazados en RabbitMQ se desvíen a una cola "muerta" para inspección humana, evitando la pérdida de información crítica.
+2. **Validación de Ownership (Seguridad):** Implementar reglas en el endpoint `GET /notifications/{id}` para asegurar que solo el propietario de la notificación (`recipient_id`) pueda consultarla.
+3. **Motor Oficial de Plantillas:** Sustituir el reemplazo básico (`strings.ReplaceAll`) por el paquete `text/template` nativo de Go, para habilitar condicionales y bucles dentro de los correos dinámicos.
+
+---
+
+## 5. Guía de Ejecución para Video General (End-to-End)
 
 El siguiente paso a paso agrupa todas las funcionalidades del microservicio en **un solo flujo demostrativo**. Úsalo como guion para grabar tu video general.
 
