@@ -40,14 +40,6 @@ A lo largo del proyecto, se desglosó el funcionamiento del sistema en 8 Histori
 
 **[PEGAR AQUÍ LA IMAGEN DEL DIAGRAMA DE ARQUITECTURA]**
 
-**Explicación del Diagrama:**
-El diagrama ilustra el flujo de datos y la división de responsabilidades dentro del microservicio:
-1. **Entrada Síncrona:** El cliente interactúa con la **API HTTP** para encolar notificaciones de forma inmediata.
-2. **Patrón Outbox:** La API guarda la intención de notificación en la **Base de Datos PostgreSQL**, garantizando que el dato no se pierda.
-3. **Entrada Asíncrona:** El **Worker AMQP** se mantiene escuchando eventos emitidos por otros microservicios a través de **RabbitMQ**.
-4. **Idempotencia:** Al recibir un evento de RabbitMQ, el Worker consulta a PostgreSQL para asegurarse de no estar procesando una notificación duplicada a causa de un fallo de red.
-5. **Salida (Patrón Composite):** Finalmente, el Worker delega la responsabilidad al canal correspondiente, comunicándose en este caso con el servidor SMTP **MailHog** para realizar la entrega final del correo.
-
 ---
 
 ## 4. Resumen de Mejoras Técnicas Propuestas
