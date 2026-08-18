@@ -31,22 +31,10 @@ A lo largo del proyecto, se desglosó el funcionamiento del sistema en 8 Histori
 
 ## 3. Diagrama de Arquitectura Global
 
-```mermaid
-graph TD
-    User((Cliente HTTP))
-    API[💻 API HTTP Handler]
-    Worker[⚙️ Worker AMQP Consumer]
-    BD[(🗄️ PostgreSQL)]
-    MQ((🐇 RabbitMQ))
-    Mail[📧 Servidor SMTP MailHog]
-    
-    User -- "POST /notifications (Síncrono)" --> API
-    API -- "Patrón Outbox" --> BD
-    MQ -- "Eventos (Asíncrono)" --> Worker
-    Worker -- "Idempotencia y Estado" --> BD
-    Worker -- "Patrón Composite" --> Mail
-    Worker -- "Publica Outbox Event" --> MQ
-```
+> **Nota para ti:** Dibuja el diagrama de arquitectura usando herramientas como Draw.io, PowerPoint o Canva (parecido al diseño que me mostraste de tu compañera) y pega la imagen aquí.
+> Ejemplo: `![Diagrama de Arquitectura](./arquitectura.png)`
+
+**[PEGAR AQUÍ LA IMAGEN DEL DIAGRAMA DE ARQUITECTURA]**
 
 ---
 
