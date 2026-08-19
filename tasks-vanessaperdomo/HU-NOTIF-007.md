@@ -57,9 +57,6 @@ A continuación, presento la evidencia en captura de pantalla individual.
 4. **Apaga la BD temporalmente:** Abre otra terminal y apaga Postgres con: `docker stop design-software-notification-db`
 5. Vuelve a ejecutar el paso 3. El microservicio reaccionará devolviendo un `503 Service Unavailable`, demostrando su capacidad de autodiagnóstico. *(Luego, vuélvela a prender con `docker start design-software-notification-db`).*
 
-🖼️ **[PEGAR AQUÍ LA CAPTURA DE PANTALLA INDIVIDUAL]**
-
----
 
 **Conclusión de la Evidencia:** 
 En esta prueba se validaron las sondas de observabilidad (Liveness y Readiness). Al simular la caída intencional de la base de datos, se comprobó cómo el microservicio tiene la capacidad de autodiagnosticarse profundamente, cambiando su estado a inoperativo (`503`) para prevenir pérdidas de datos.

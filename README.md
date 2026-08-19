@@ -1,4 +1,4 @@
-# Evidencias - Reconocimiento Notification Service (Ficha 3145555)
+# Evidencias - Reconocimiento 
 
 Este directorio contiene las evidencias de la actividad de práctica individual sobre el microservicio `design-software-notification-service`.
 

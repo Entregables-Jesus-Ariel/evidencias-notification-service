@@ -70,9 +70,6 @@ A continuación, presento la evidencia en captura de pantalla individual proband
 3. Ejecuta **exactamente el mismo comando `curl` de nuevo**.
 4. Muestra la base de datos (o haz un GET listando) para demostrar que, aunque enviaste dos peticiones idénticas, solo se guardó un registro en BD.
 
-🖼️ **[PEGAR AQUÍ LA CAPTURA DE PANTALLA INDIVIDUAL]**
-
----
 
 **Conclusión de la Evidencia:** 
 Esta prueba validó los mecanismos de resiliencia del sistema. Al inyectar eventos duplicados intencionalmente, se demostró cómo la restricción de unicidad en Postgres (Idempotencia) protege eficazmente al microservicio de enviar spam o procesar cargas redundantes ante fallos en la red.

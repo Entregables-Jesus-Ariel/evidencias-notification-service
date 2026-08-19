@@ -65,8 +65,6 @@ A continuación, presento la evidencia en captura de pantalla individual.
    ```
 3. Realiza un `GET` con el ID generado para demostrar que el "Asunto" (Subject) guardado en base de datos contiene los textos de tus variables (`Servidor Caído`) y no el texto genérico inicial.
 
-🖼️ **[PEGAR AQUÍ LA CAPTURA DE PANTALLA INDIVIDUAL]**
-
 ---
 
 **Conclusión de la Evidencia:** 

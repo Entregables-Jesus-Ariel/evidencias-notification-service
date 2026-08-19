@@ -63,10 +63,11 @@ graph TD
 
 ## 4. Resumen de Mejoras Técnicas Propuestas
 
-Durante el análisis del código, se identificaron 3 oportunidades clave de mejora arquitectónica:
+Durante el análisis del código, se identificaron 4 oportunidades clave de mejora arquitectónica:
 1. **Enrutamiento a Dead Letter Queue (DLQ):** Automatizar que los mensajes corruptos rechazados en RabbitMQ se desvíen a una cola "muerta" para inspección humana, evitando la pérdida de información crítica.
 2. **Validación de Ownership (Seguridad):** Implementar reglas en el endpoint `GET /notifications/{id}` para asegurar que solo el propietario de la notificación (`recipient_id`) pueda consultarla.
 3. **Motor Oficial de Plantillas:** Sustituir el reemplazo básico (`strings.ReplaceAll`) por el paquete `text/template` nativo de Go, para habilitar condicionales y bucles dentro de los correos dinámicos.
+4. **Corrección de Lógica de Idempotencia:** El flujo actual del Worker envía el correo a MailHog *antes* de validar la restricción de unicidad en la Base de Datos (`source_event_id`), lo que genera envíos duplicados reales aunque la BD los rechace. La mejora estructural consiste en invertir el orden: consultar primero la BD mediante un bloqueo o insert previo, y enviar el correo solo si la transacción fue exitosa.
 
 ---
 
@@ -208,7 +209,7 @@ docker exec ds-develop-postgres-1 psql -U design_software_user -d design-softwar
 
 ## 6. Evidencia en Video (Ejecución General)
 
-🎥 **[PEGAR AQUÍ EL ENLACE AL VIDEO GENERAL DE ESTA EJECUCIÓN]**
+🎥 **[Enlace al video de la demostración End-to-End](https://drive.google.com/file/d/1L3NrW_W3vKHyTYx-Fazu-4_m4qvKQt70/view?usp=sharing)**
 
 **Conclusión Final:**
 Como se evidenció en la demostración End-to-End, la combinación de una Arquitectura Hexagonal con el uso del Patrón Outbox, RabbitMQ y PostgreSQL da como resultado un microservicio robusto, altamente escalable y extremadamente resiliente ante caídas de red o duplicidad de información.

@@ -63,8 +63,6 @@ A continuación, presento la evidencia en captura de pantalla individual.
 4. El servidor te devolverá los datos de la notificación con un código `200 OK`.
 5. Cambia el último número del ID e inténtalo de nuevo para demostrar cómo el servidor responde con un `404 Not Found`.
 
-🖼️ **[PEGAR AQUÍ LA CAPTURA DE PANTALLA INDIVIDUAL]**
-
 ---
 
 **Conclusión de la Evidencia:** 

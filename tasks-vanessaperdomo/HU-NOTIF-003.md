@@ -70,7 +70,6 @@ A continuación, presento la evidencia en captura de pantalla individual.
 3. Abre tu navegador y entra a **MailHog**: `http://localhost:8025`.
 4. Muestra en el video que el correo llegó a la bandeja de entrada, demostrando que el `SMTPNotifier` funcionó correctamente.
 
-🖼️ **[PEGAR AQUÍ LA CAPTURA DE PANTALLA INDIVIDUAL]**
 
 ---
 

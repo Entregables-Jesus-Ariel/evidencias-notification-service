@@ -63,7 +63,6 @@ A continuación, presento la evidencia en captura de pantalla individual del End
 5. Abre **MailHog** en tu navegador web (`http://localhost:8025`).
 6. Demuestra en el video que todo el flujo concluyó con la llegada del correo a la bandeja de prueba.
 
-🖼️ **[PEGAR AQUÍ LA CAPTURA DE PANTALLA INDIVIDUAL]**
 
 ---
 

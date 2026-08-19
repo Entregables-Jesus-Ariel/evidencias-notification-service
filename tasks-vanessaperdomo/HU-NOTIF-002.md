@@ -76,12 +76,10 @@ A continuación, presento la evidencia en captura de pantalla individual.
        "published_by": "123e4567-e89b-12d3-a456-426614174000",
        "schedule_name": "Horario Mañana",
        "ficha": "3145555"
-     }
+     
    }
    ```
 7. En la terminal del worker verás cómo el evento es consumido y procesado correctamente.
-
-🖼️ **[PEGAR AQUÍ LA CAPTURA DE PANTALLA INDIVIDUAL]**
 
 ---
 
